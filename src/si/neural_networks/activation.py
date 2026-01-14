@@ -177,3 +177,92 @@ class ReLUActivation(ActivationLayer):
             The derivative of the activation function.
         """
         return np.where(input >= 0, 1, 0)
+
+
+    #####
+
+
+class TanhActivation(ActivationLayer):
+    """
+    Tanh activation function.
+    """
+
+    def activation_function(self, input: np.ndarray):
+        """
+        Tanh activation function.
+        Squashes values to the range of -1 to 1.
+
+        Parameters
+        ----------
+        input: numpy.ndarray
+            The input to the layer.
+
+        Returns
+        -------
+        numpy.ndarray
+            The output of the layer.
+        """
+
+        return np.tanh(input)
+
+    def derivative(self, input: np.ndarray):
+        """
+        Derivative of the Tanh activation function.
+
+        Parameters
+        ----------
+        input: numpy.ndarray
+            The input to the layer.
+
+        Returns
+        -------
+        numpy.ndarray
+            The derivative of the activation function.
+        """
+
+        return 1 - np.tanh(input) ** 2
+
+class SoftmaxActivation(ActivationLayer):
+    """
+    Softmax activation function.
+    """
+
+    def activation_function(self, input: np.ndarray):
+        """
+        Softmax activation function.
+        Transforms raw output scores into a probability distribution.
+        Includes stability improvement by subtracting max value.
+
+        Parameters
+        ----------
+        input: numpy.ndarray
+            The input to the layer.
+
+        Returns
+        -------
+        numpy.ndarray
+            The output of the layer.
+        """
+        # Stable version: subtract the max value of x from x
+        # axis=1 and keepdims=True for correct broadcasting
+        z = input - np.max(input, axis=1, keepdims=True)
+        exp_z = np.exp(z)
+        return exp_z / np.sum(exp_z, axis=1, keepdims=True)
+
+    def derivative(self, input: np.ndarray):
+        """
+        Derivative of the Softmax activation function.
+
+        Parameters
+        ----------
+        input: numpy.ndarray
+            The input to the layer.
+
+        Returns
+        -------
+        numpy.ndarray
+            The derivative of the activation function.
+        """
+        # Formula: f'(x) = f(x)(1 - f(x))
+        f_x = self.activation_function(input)
+        return f_x * (1 - f_x)
